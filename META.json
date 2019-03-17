@@ -58,6 +58,8 @@
             "Class::Trigger" : "0",
             "DBI" : "0",
             "List::Util" : "0",
+            "Scalar::Util" : "0",
+            "POSIX::AtFork" : "0",
             "perl" : "5.006001"
          }
       },

@@ -12,6 +12,8 @@ use Data::ObjectDriver::Errors;
 use Data::ObjectDriver::SQL;
 use Data::ObjectDriver::Driver::DBD;
 use Data::ObjectDriver::Iterator;
+use Scalar::Util qw/weaken/;
+use POSIX::AtFork;
 
 __PACKAGE__->mk_accessors(qw( dsn username password connect_options dbh get_dbh dbd prefix reuse_dbh force_no_prepared_cache));
 
@@ -36,6 +38,13 @@ sub init {
         }
         $driver->dbd(Data::ObjectDriver::Driver::DBD->new($type));
     }
+
+    # Purge Cached dbh at fork
+    weaken(my $driver_weaken = $driver);
+    POSIX::AtFork->add_to_child(sub {
+        $driver_weaken->dbh(undef);
+    });
+
     $driver;
 }
 
@@ -751,5 +760,10 @@ sub last_error {
     my $driver = shift;
     return $driver->dbd->map_error_code($DBI::err, $DBI::errstr);
 }
+
+# Purge Cached dbh at fork
+POSIX::AtFork->add_to_child(sub {
+    %Handles = ();
+});
 
 1;

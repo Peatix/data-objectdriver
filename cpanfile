@@ -3,6 +3,8 @@ requires 'Class::Data::Inheritable';
 requires 'Class::Trigger';
 requires 'DBI';
 requires 'List::Util';
+requires 'Scalar::Util';
+requires 'POSIX::AtFork';
 requires 'perl', '5.006001';
 recommends 'Text::SimpleTable';
 

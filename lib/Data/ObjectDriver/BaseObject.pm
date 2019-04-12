@@ -8,10 +8,6 @@ our $HasWeaken;
 eval q{ use Scalar::Util qw(weaken) }; ## no critic
 $HasWeaken = !$@;
 
-our $HasAtFork;
-eval q{ use POSIX::AtFork }; ## no critic
-$HasAtFork = !$@;
-
 use Carp ();
 
 use Class::Trigger qw( pre_save post_save post_load pre_search
@@ -669,14 +665,6 @@ sub has_partitions {
             $obj->partition_id($partition_id);
             $orig_obj->partition_id($partition_id);
         }
-    });
-}
-
-# At fork, forget about parent's current transaction status.
-if ( $HasAtFork ) {
-    POSIX::AtFork->add_to_child(sub {
-        @WorkingDrivers = ();
-        $TransactionLevel = 0;
     });
 }
 
